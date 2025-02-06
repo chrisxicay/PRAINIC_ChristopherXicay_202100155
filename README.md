@@ -1,4 +1,4 @@
-# Practicas Iniciales 
+# Prácticas Iniciales 
 
 Nombre: Christopher Emanuel Xicay Gómez
 
