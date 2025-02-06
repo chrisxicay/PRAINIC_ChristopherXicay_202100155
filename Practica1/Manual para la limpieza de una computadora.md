@@ -96,7 +96,7 @@ Este manual te guiará en los pasos para realizar la limpieza de tu laptop HP Pr
 ## Recursos Adicionales  
 
 Si prefieres seguir un video práctico, puedes consultar este tutorial en YouTube:  
-**[Cómo limpiar una laptop HP ProBook 640](URL_DEL_VIDEO)**  
+**[Cómo limpiar una laptop HP ProBook 640](https://youtu.be/zQKqWBNGjM8)**  
 
 ---
 
