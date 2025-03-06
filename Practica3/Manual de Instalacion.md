@@ -1,4 +1,5 @@
 # Manual de Instalación de Ubuntu y Configuración de Apache2
+**Autor: [Christopher Emanuel Xicay Gómez]**
 
 ## 1. Instalación de Ubuntu en Máquina Virtual
 
