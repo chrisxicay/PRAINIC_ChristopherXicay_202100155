@@ -10,10 +10,9 @@ const login = () => {
     const {logueado, setLogueado} = useAuthContext();
 
     const [credenciales, setCredenciales] = useState({ 
-        codigo:'',
-        contrasenia:''
-    });
-
+      registro_academico:'',
+      password:''
+  });
     const handleSumbit = (e) => {
       e.preventDefault();
     }
