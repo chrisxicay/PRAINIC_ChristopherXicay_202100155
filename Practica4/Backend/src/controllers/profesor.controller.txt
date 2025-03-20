@@ -1,0 +1,136 @@
+import { Request, Response } from 'express';
+import { lista_profesores } from '../db/db';
+import { Profesor } from '../models/profesor.model';
+
+export const crearProfesor = (req: Request, res: Response) => {
+    const { codigo, nombre, correo, genero, contrasenia } = req.body;
+    if(existeProfesor(codigo)){
+        res.status(409).json({
+            mensaje: 'El profesor ya existe',
+            type: 'error',
+            status: 409
+        });
+        return;
+    }
+
+    const nuevoProfesor = new Profesor(codigo, nombre, correo, genero, contrasenia);
+    lista_profesores.push(nuevoProfesor);
+    res.status(201).json({
+        mensaje: 'Profesor creado',
+        type: 'success',
+        status: 201
+    });
+}
+
+export const obtenerProfesores = (req: Request, res: Response) => {
+    if(lista_profesores.length === 0){
+        res.status(404).json({
+            mensaje: 'No hay profesores',
+            type: 'error',
+            status: 404
+        });
+        return;
+    }
+
+    res.status(200).json({
+        mensaje: 'Profesores encontrados',
+        profesores: lista_profesores,
+        type: 'success',
+        status: 200
+    });
+}
+
+export const obtenerProfesor = (req: Request, res: Response) => {
+    const { codigo } = req.params;
+    for(let i: number = 0; i < lista_profesores.length; i++){
+        if(lista_profesores[i].getCodigo() === codigo){
+            res.status(200).json({
+                mensaje: 'Profesor encontrado',
+                profesor: lista_profesores[i],
+                type: 'success',
+                status: 200
+            });
+            return;
+        }
+    }
+
+    res.status(404).json({
+        mensaje: 'Profesor no encontrado',
+        type: 'error',
+        status: 404
+    });
+}
+
+export const actualizarProfesor = (req: Request, res: Response) => {
+    const { codigo } = req.params;
+    const { nombre, correo, genero, contrasenia } = req.body;
+    for(let i: number = 0; i < lista_profesores.length; i++){
+        if(lista_profesores[i].getCodigo() === codigo){
+            lista_profesores[i].setNombre(nombre);
+            lista_profesores[i].setCorreo(correo);
+            lista_profesores[i].setGenero(genero);
+            lista_profesores[i].setContrasenia(contrasenia);
+            res.status(200).json({
+                mensaje: 'Profesor actualizado',
+                profesor: lista_profesores[i],
+                type: 'success',
+                status: 200
+            });
+            return;
+        }
+    }
+
+    res.status(404).json({
+        mensaje: 'Profesor no encontrado',
+        type: 'error',
+        status: 404
+    });
+}
+
+export const eliminarProfesor = (req: Request, res: Response) => {
+    const { codigo } = req.params;
+    for(let i: number = 0; i < lista_profesores.length; i++){
+        if(lista_profesores[i].getCodigo() === codigo){
+            lista_profesores.splice(i, 1);
+            res.status(200).json({
+                mensaje: 'Profesor eliminado',
+                type: 'success',
+                status: 200
+            });
+            return;
+        }
+    }
+
+    res.status(404).json({
+        mensaje: 'Profesor no encontrado',
+        type: 'error',
+        status: 404
+    });
+}
+
+export const existeProfesor = (codigo: string) => {
+    for(let i: number = 0; i < lista_profesores.length; i++){
+        if(lista_profesores[i].getCodigo() === codigo){
+            return true;
+        }
+    }
+    return false;
+}
+
+export const CargaMasivaProfesores = (req: Request, res: Response) => {
+    const { profesores } = req.body;
+
+    for(let i: number = 0; i < profesores.length; i++){
+        let profesor = profesores[i];
+        if(!existeProfesor(profesor.codigo)){
+            const nuevoProfesor = new Profesor(profesor.codigo, profesor.nombre, profesor.correo, profesor.genero, profesor.contrasenia);
+            lista_profesores.push(nuevoProfesor);
+        }
+    }
+
+    res.status(201).json({
+        mensaje: 'Profesores creados',
+        type: 'success',
+        status: 201
+    });
+}

@@ -1,0 +1,118 @@
+import { Request, Response } from 'express';
+import { lista_estudiantes } from '../db/db';
+import { Estudiante } from '../models/estudiante.model';
+
+export const crearEstudiante = (req: Request, res: Response) => {
+    const { codigo, nombre, correo, genero, contrasenia } = req.body;
+    if(existeEstudiante(codigo)){
+        res.status(409).json({
+            mensaje: 'El estudiante ya existe',
+            type: 'error',
+            status: 409
+        });
+        return;
+    }
+
+    const nuevoEstudiante = new Estudiante(codigo, nombre, correo, genero, contrasenia);
+    lista_estudiantes.push(nuevoEstudiante);
+    res.status(201).json({
+        mensaje: 'Estudiante creado',
+        type: 'success',
+        status: 201
+    });
+}
+
+const existeEstudiante = (codigo: number) => {
+    for(let i: number = 0; i < lista_estudiantes.length; i++){
+        if(lista_estudiantes[i].getCodigo() === codigo){
+            return true;
+        }
+    }
+    return false;
+}
+
+export const obtenerEstudiantes = (req: Request, res: Response) => {
+    if(lista_estudiantes.length === 0){
+        res.status(404).json({
+            mensaje: 'No hay estudiantes',
+            type: 'error',
+            status: 404
+        });
+        return;
+    }
+
+    res.status(200).json({
+        mensaje: 'Estudiantes encontrados',
+        estudiantes: lista_estudiantes,
+        type: 'success',
+        status: 200
+    });
+}
+
+export const obtenerEstudiante = (req: Request, res: Response) => {
+    const { codigo } = req.params;
+    for(let i: number = 0; i < lista_estudiantes.length; i++){
+        if(lista_estudiantes[i].getCodigo() === Number(codigo)){
+            res.status(200).json({
+                mensaje: 'Estudiante encontrado',
+                estudiante: lista_estudiantes[i],
+                type: 'success',
+                status: 200
+            });
+            return;
+        }
+    }
+
+    res.status(404).json({
+        mensaje: 'Estudiante no encontrado',
+        type: 'error',
+        status: 404
+    });
+}
+
+export const actualizarEstudiante = (req: Request, res: Response) => {
+    const { codigo } = req.params;
+    const { nombre, correo, genero, contrasenia } = req.body;
+    for(let i: number = 0; i < lista_estudiantes.length; i++){
+        if(lista_estudiantes[i].getCodigo() === Number(codigo)){
+            lista_estudiantes[i].setNombre(nombre);
+            lista_estudiantes[i].setCorreo(correo);
+            lista_estudiantes[i].setGenero(genero);
+            lista_estudiantes[i].setContrasenia(contrasenia);
+            res.status(200).json({
+                mensaje: 'Estudiante actualizado',
+                estudiante: lista_estudiantes[i],
+                type: 'success',
+                status: 200
+            });
+            return;
+        }
+    }
+
+    res.status(404).json({
+        mensaje: 'Estudiante no encontrado',
+        type: 'error',
+        status: 404
+    });
+}
+
+export const eliminarEstudiante = (req: Request, res: Response) => {
+    const { codigo } = req.params;
+    for(let i: number = 0; i < lista_estudiantes.length; i++){
+        if(lista_estudiantes[i].getCodigo() === Number(codigo)){
+            lista_estudiantes.splice(i, 1);
+            res.status(200).json({
+                mensaje: 'Estudiante eliminado',
+                type: 'success',
+                status: 200
+            });
+            return;
+        }
+    }
+
+    res.status(404).json({
+        mensaje: 'Estudiante no encontrado',
+        type: 'error',
+        status: 404
+    });
+}

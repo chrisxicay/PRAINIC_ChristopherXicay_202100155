@@ -1,0 +1,40 @@
+import { Request, Response } from "express";
+import { lista_estudiantes, lista_profesores } from "../db/db";
+
+export const login = (req: Request, res: Response) => {
+    const { codigo, contrasenia } = req.body;
+
+    if(codigo === 'admin' && contrasenia === 'admin'){
+        res.json({
+            mensaje: 'Bienvenido administrador',
+            rol: 1,
+            type: 'success',
+            status: 200
+        }).status(200);
+    }
+    for(let i:number = 0; i < lista_profesores.length; i++){
+        if(lista_profesores[i].getCodigo() === codigo && lista_profesores[i].getContrasenia() === contrasenia){
+            res.json({
+                mensaje: 'Bienvenido Profesor',
+                rol: 2,
+                type: 'success',
+                status: 200
+            }).status(200);
+        }
+    }
+    for(let i:number = 0; i < lista_estudiantes.length; i++){
+        if(lista_estudiantes[i].getCodigo() === Number(codigo) && lista_estudiantes[i].getContrasenia() === contrasenia){
+            res.json({
+                mensaje: 'Bienvenido estudiante',
+                rol: 3,
+                type: 'success',
+                status: 200
+            }).status(200);
+        }
+    }
+    res.json({
+        mensaje: 'Credenciales incorrectas',
+        type: 'error',
+        status: 404
+    }).status(404);
+}
