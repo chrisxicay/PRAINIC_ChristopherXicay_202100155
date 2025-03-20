@@ -1,28 +1,50 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const db = require('./config/database');
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import pool from "./db.js";
+import authRoutes from "./routes/RoutesAuth.js";
+import cursosRoutes from "./routes/Routescursos.js";
+import catedraticosRoutes from "./routes/RoutesCatedraticos.js";
+import publicacionesRoutes from "./routes/RoutesPublicaciones.js";
+import comentariosRoutes from "./routes/RoutesComentarios.js";
 
-// Inicializar Express
+
+dotenv.config(); // Cargar variables de entorno
+
 const app = express();
 
-// Middleware
-app.use(cors());
-app.use(bodyParser.json());
 
-// Probar conexión a la base de datos
-db.authenticate()
-  .then(() => console.log('Conexión a MySQL exitosa'))
-  .catch(err => console.log(' Error en la conexión a MySQL:', err));
+// Middlewares
+app.use(cors());
+app.use(express.json()); // Para manejar JSON en las peticiones
+app.use("/auth", authRoutes); // Rutas de autenticación
+app.use("/cursos", cursosRoutes); // Rutas de cursos
+app.use("/catedraticos", catedraticosRoutes); // Rutas de catedráticos
+app.use("/publicaciones", publicacionesRoutes); // Rutas de publicaciones
+app.use("/comentarios", comentariosRoutes); // Rutas de comentarios
 
 // Ruta de prueba
-app.get('/', (req, res) => {
-  res.send('API funcionando correctamente');
+app.get("/", (req, res) => {
+  res.send("¡Servidor corriendo correctamente!");
 });
 
-// Iniciar el servidor
-const PORT = process.env.PORT || 4000;
+//prueba de conexion a la base de datos
+app.get("/test-db", async (req, res) => {
+    try {
+      const [rows] = await pool.query("SELECT 1+1 AS resultado");
+      res.json({ mensaje: "Conexión a MySQL exitosa", resultado: rows[0].resultado });
+    } catch (error) {
+      console.error("Error conectando a MySQL:", error);
+      res.status(500).json({ error: "Error de conexión a la base de datos" });
+    }
+  });
+
+// Iniciar servidor
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(` Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
+
+
+
